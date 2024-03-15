@@ -1,4 +1,5 @@
-﻿using DesktopTaskManager.ViewModel;
+﻿using DesktopTaskManager.Services;
+using DesktopTaskManager.ViewModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,7 +20,7 @@ namespace DesktopTaskManager
     {
         public MainWindow()
         {
-            DataContext = new MainWindowViewModel();
+            DataContext = new MainWindowViewModel(new AccountService());
 
             InitializeComponent();
         }

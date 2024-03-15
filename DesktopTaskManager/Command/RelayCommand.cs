@@ -7,10 +7,10 @@ using System.Windows.Input;
 
 namespace DesktopTaskManager.Command
 {
+    public delegate void Commander(object? parameter);
     public class RelayCommand : ICommand
     {
         public event EventHandler? CanExecuteChanged;
-        public delegate void Commander(object? parameter);
         private Commander _mainCommand;
 
         public RelayCommand(Commander mainCommand) 

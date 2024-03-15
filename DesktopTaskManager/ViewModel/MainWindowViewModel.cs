@@ -1,22 +1,53 @@
-﻿using DesktopTaskManager.Services;
+﻿using DesktopTaskManager.Command;
+using DesktopTaskManager.Services;
+using DesktopTaskManager.Services.Interfaces;
 using DesktopTaskManager.ViewModel.Main;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace DesktopTaskManager.ViewModel
 {
-    public class MainWindowViewModel : BaseViewMainModel
+    public class MainWindowViewModel : BaseMainViewModel
     {
-        public MainWindowViewModel()
+        private IAccountService _accountService;
+
+        public ICommand SwitchMainViewCommand { get; set; }
+
+        public MainWindowViewModel(IAccountService accountService)
         {
-            CurrentViewModel = new LoginViewModel(new AccountService());
+            _accountService = accountService;
+            SwitchMainViewCommand = new RelayCommand(SwitchMainView);
+            CurrentViewModel = new LoginViewModel(_accountService);
+
+            CurrentViewModel.OnMainViewChangeRequired += SwitchMainView;
         }
 
-        private BaseViewMainModel _currentViewModel;
-        public BaseViewMainModel CurrentViewModel 
+        private void SwitchMainView(object? parameter)
+        {
+            MainViewType type = (MainViewType)parameter;
+            switch (type)
+            {
+                case MainViewType.Login:
+                    CurrentViewModel = new LoginViewModel(_accountService);
+                    CurrentViewModel.OnMainViewChangeRequired += SwitchMainView;
+                    break;
+                case MainViewType.Register:
+                    CurrentViewModel = new RegisterViewModel(_accountService);
+                    CurrentViewModel.OnMainViewChangeRequired += SwitchMainView;
+                    break;
+                case MainViewType.Main:
+                    CurrentViewModel = new MainViewModel();
+                    CurrentViewModel.OnMainViewChangeRequired += SwitchMainView;
+                    break;
+            }
+        }
+
+        private BaseMainViewModel _currentViewModel;
+        public BaseMainViewModel CurrentViewModel 
         {
             get { return _currentViewModel; }
             set

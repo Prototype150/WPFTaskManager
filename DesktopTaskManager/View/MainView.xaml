@@ -4,9 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DesktopTaskManager.View"
+             xmlns:mainViewModels="clr-namespace:DesktopTaskManager.ViewModel.Main"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="MAIN"/>
-    </Grid>
+    <UserControl.Resources>
+        <mainViewModels:MainViewModel x:Key="mainViewModel"/>
+    </UserControl.Resources>
+    <StackPanel>
+        <TextBlock Text="{Binding Source={StaticResource mainViewModel}, Path=MainAccount.Username}"/>
+        <TextBlock Text="{Binding Source={StaticResource mainViewModel}, Path=MainAccount.Id}"/>
+    </StackPanel>
 </UserControl>
