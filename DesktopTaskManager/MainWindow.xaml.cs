@@ -20,7 +20,7 @@ namespace DesktopTaskManager
     {
         public MainWindow()
         {
-            DataContext = new MainWindowViewModel(new AccountService());
+            DataContext = new MainWindowViewModel(new AccountService(), new TaskService());
 
             InitializeComponent();
         }
