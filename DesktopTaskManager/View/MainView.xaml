@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DesktopTaskManager.View"
+             xmlns:views="clr-namespace:DesktopTaskManager.View"
              xmlns:mainViewModels="clr-namespace:DesktopTaskManager.ViewModel.Main"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -17,12 +17,15 @@
             <TextBlock Text="{x:Static mainViewModels:MainViewModel.Id}"/>
             <Button Content="Logout" Width="100" HorizontalAlignment="Left" Command="{Binding LogoutCommand}"/>
         </StackPanel>
-        <ListView Grid.Column="1" ItemsSource="{Binding Tasks}" >
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Task}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <StackPanel Grid.Column="1" >
+            <ListView ItemsSource="{Binding Tasks}" x:Name="taskList" HorizontalContentAlignment="Stretch">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <views:TaskView/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Width="100" HorizontalAlignment="Left" Content="Add new task"/>
+        </StackPanel>
     </Grid>
 </UserControl>

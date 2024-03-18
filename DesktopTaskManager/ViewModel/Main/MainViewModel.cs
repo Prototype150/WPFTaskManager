@@ -16,7 +16,7 @@ namespace DesktopTaskManager.ViewModel.Main
     {
         private ITaskService _taskService;
 
-        public ObservableCollection<TaskModel> Tasks { get; set; }
+        public ObservableCollection<TaskViewModel> Tasks { get; set; }
 
         public static AccountModel? MainAccount
         {
@@ -38,8 +38,9 @@ namespace DesktopTaskManager.ViewModel.Main
 
         public MainViewModel(ITaskService taskService)
         {
-            Tasks = new ObservableCollection<TaskModel>();
+            Tasks = new ObservableCollection<TaskViewModel>();
             _taskService = taskService;
+            
             LogoutCommand = new RelayCommand(Logout);
 
             GetTasks();
@@ -61,7 +62,7 @@ namespace DesktopTaskManager.ViewModel.Main
             var tasks = await _taskService.GetAccountTasks(MainAccount.Id);
             foreach (var task in tasks.tasks)
             {
-                Tasks.Add(task);
+                Tasks.Add(new TaskViewModel(task.Id ,task.Task, task.IsCompleted, task.SortId, _taskService));
             }
             OnPropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(Tasks)));
         }

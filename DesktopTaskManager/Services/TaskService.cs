@@ -34,5 +34,25 @@ namespace DesktopTaskManager.Services
                 return (null, jsonResponce);
             }
         }
+
+        public async Task<(bool result, string message)> UpdateTask(TaskModel task)
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+
+            using (HttpClient client = new HttpClient(handler))
+            {
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Put, new Uri(_connectionString + "/task/update")) { Content = new StringContent(JsonSerializer.Serialize(task), Encoding.UTF8, MediaTypeNames.Application.Json) };
+                var responce = await client.SendAsync(message);
+                var stringContent = await responce.Content.ReadAsStringAsync();
+
+                if (responce.IsSuccessStatusCode)
+                {
+                    bool result = JsonSerializer.Deserialize<bool>(stringContent);
+                    return (result, result ? "ok" : stringContent);
+                }
+                return (false, stringContent);
+            }
+        }
     }
 }

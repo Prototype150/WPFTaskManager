@@ -53,7 +53,7 @@ namespace DesktopTaskManager.ViewModel.Main
                         ErrorMessage = "Password is empty!";
                         break;
                     default:
-                        ErrorMessage = result.message;
+                        ErrorMessage = "Something went wrong";
                         break;
                 }
                 return;

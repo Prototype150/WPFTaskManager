@@ -56,16 +56,15 @@ namespace DesktopTaskManager.Services
             {
                 HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, new Uri(_connectionString + "/account/register")) { Content = new StringContent(JsonSerializer.Serialize(new AccountModel(username, password)), Encoding.UTF8, MediaTypeNames.Application.Json) };
                 var responce = await client.SendAsync(message);
+                var jsonAccount = await responce.Content.ReadAsStringAsync();
 
                 if (responce.IsSuccessStatusCode)
                 {
-                    var jsonAccount = await responce.Content.ReadAsStringAsync();
                     var account = JsonSerializer.Deserialize<AccountModel>(jsonAccount, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (account != null)
                         return (account, "ok");
-                    return (null, "Something went wrong");
                 }
-                return (null, "Something went wrong");
+                return (null, jsonAccount);
             }
         }
     }
