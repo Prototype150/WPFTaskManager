@@ -5,11 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DesktopTaskManager.View"
              xmlns:converters="clr-namespace:DesktopTaskManager.Converters"
+             xmlns:customControls="clr-namespace:DesktopTaskManager.CustomControl"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             x:Name="mainControl"
              mc:Ignorable="d">
     <UserControl.Resources>
         <converters:BoolToColorConverter x:Key="boolToColorConverter"/>
+        <converters:BoolToVisibilityReversedConverter x:Key="boolToVisibilityReversedConverter"/>
         <Style x:Key="taskButtonStyle" TargetType="Border">
             <Setter Property="Visibility" Value="Collapsed"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Width" Value="50"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1, Mode=FindAncestor,AncestorType=Grid}, Path=IsMouseOver}" Value="True">
                     <Setter Property="Visibility" Value="Visible"/>
@@ -17,7 +23,7 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <Grid Height="50" HorizontalAlignment="Stretch" x:Name="mainGrid" Background="{Binding IsCompleted, Converter={StaticResource boolToColorConverter}}">
+    <Grid MaxWidth="{Binding ElementName=mainControl, Path=ActualWidth}" Height="50" HorizontalAlignment="Stretch" x:Name="mainGrid" Background="{Binding IsCompleted, Converter={StaticResource boolToColorConverter}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
@@ -27,9 +33,22 @@
         <Border Grid.Column="0" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
             <Button Command="{Binding UpdateTaskStateCommand}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>
         </Border>
-        <TextBlock Grid.Column="1" Text="{Binding Task}"/>
+        <customControls:EditableTextBlock Grid.Column="1" Text="{Binding Task, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+        <TextBlock Grid.Column="1" Text="Task is not updated. Plese, use the 'update' or 'update all' button!" Visibility="{Binding IsUpdated, Converter={StaticResource boolToVisibilityReversedConverter}}" Foreground="Blue"  VerticalAlignment="Bottom"/>
         <Border Grid.Column="2" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
-            <Button HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>
+            <Button Command="{Binding UpdateTaskCommand}" OverridesDefaultStyle="True" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Grid Height="40" Width="40" Background="Blue"></Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Border>
         <Border Grid.Column="3" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
             <Button HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>

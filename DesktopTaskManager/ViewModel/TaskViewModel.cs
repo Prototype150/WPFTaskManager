@@ -17,6 +17,7 @@ namespace DesktopTaskManager.ViewModel
         private ITaskService _taskService;
 
         public ICommand UpdateTaskStateCommand { get; set; }
+        public ICommand UpdateTaskCommand { get; set; }
 
         private int _id;
         public int Id
@@ -29,13 +30,29 @@ namespace DesktopTaskManager.ViewModel
             }
         }
 
+        private bool _isUpdated;
+        public bool IsUpdated
+        {
+            get { return _isUpdated; }
+            private set 
+            { 
+                _isUpdated = value;
+                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsUpdated)));
+            }
+        }
+
+
         private string _task;
         public string Task {
             get { return _task; }
             set
             {
-                _task = value;
-                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Task)));
+                if (value != _task)
+                {
+                    _task = value;
+                    IsUpdated = false;
+                    OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Task)));
+                }
             }
         }
 
@@ -46,6 +63,7 @@ namespace DesktopTaskManager.ViewModel
             set
             {
                 _isCompleted = value;
+                IsUpdated = false;
                 OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsCompleted)));
             }
         }
@@ -61,13 +79,15 @@ namespace DesktopTaskManager.ViewModel
             }
         }
 
-        public TaskViewModel(int id,string task, bool isCompleted, int sortId, ITaskService taskService)
+        public TaskViewModel(int id,string task, bool isUpdated, bool isCompleted, int sortId, ITaskService taskService)
         {
             Id = id;
             SortId = sortId;
             Task = task;
             IsCompleted = isCompleted;
+            IsUpdated = isUpdated;
 
+            UpdateTaskCommand = new RelayCommand(UpdateTask);
             UpdateTaskStateCommand = new RelayCommand(UpdateTaskState);
 
             _taskService = taskService;
@@ -75,9 +95,14 @@ namespace DesktopTaskManager.ViewModel
 
         private async void UpdateTaskState(object? parameter)
         {
-            var result = await _taskService.UpdateTask(new TaskModel(MainViewModel.MainAccount.Id, Task, SortId) { Id = Id, IsCompleted = !IsCompleted });
-            if(result.result)
-                IsCompleted = !IsCompleted;
+            IsCompleted = !IsCompleted;
+        }
+
+        private async void UpdateTask(object? s)
+        {
+            var result = await _taskService.UpdateTask(new TaskModel(MainViewModel.MainAccount.Id, Task, SortId) { Id = Id, IsCompleted = IsCompleted });
+            if (result.result)
+                IsUpdated = true;
         }
     }
 }

@@ -35,6 +35,7 @@ namespace DesktopTaskManager.ViewModel.Main
         }
 
         public ICommand LogoutCommand { get; set; }
+        public ICommand UpdateAllTasksCommand { get; set; }
 
         public MainViewModel(ITaskService taskService)
         {
@@ -42,8 +43,17 @@ namespace DesktopTaskManager.ViewModel.Main
             _taskService = taskService;
             
             LogoutCommand = new RelayCommand(Logout);
+            UpdateAllTasksCommand = new RelayCommand(UpdateAllTasks);
 
             GetTasks();
+        }
+
+        private void UpdateAllTasks(object? parameter)
+        {
+            foreach (var task in Tasks.Where(x => !x.IsUpdated))
+            {
+                task.UpdateTaskCommand.Execute(null);
+            }
         }
 
         private void Logout(object? parameter)
@@ -62,7 +72,7 @@ namespace DesktopTaskManager.ViewModel.Main
             var tasks = await _taskService.GetAccountTasks(MainAccount.Id);
             foreach (var task in tasks.tasks)
             {
-                Tasks.Add(new TaskViewModel(task.Id ,task.Task, task.IsCompleted, task.SortId, _taskService));
+                Tasks.Add(new TaskViewModel(task.Id ,task.Task, true, task.IsCompleted, task.SortId, _taskService));
             }
             OnPropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(Tasks)));
         }

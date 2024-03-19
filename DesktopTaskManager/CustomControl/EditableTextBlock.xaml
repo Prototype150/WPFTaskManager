@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="DesktopTaskManager.CustomControl.EditableTextBlock"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DesktopTaskManager.CustomControl"
+             xmlns:converters="clr-namespace:DesktopTaskManager.Converters"
+             x:Name="editableTextBox"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="boolToVisibility"/>
+        <converters:BoolToVisibilityReversedConverter x:Key="boolToVisibilityReversed"/>
+        <ControlTemplate x:Key="textBlockTemplate" TargetType="UserControl">
+            <TextBlock TextTrimming="CharacterEllipsis" Height="auto" Text="{Binding ElementName=editableTextBox, Path=Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding ElementName=editableTextBox, Path=IsEditMode, Mode=TwoWay, Converter={StaticResource boolToVisibilityReversed}}" x:Name="textBlock"></TextBlock>
+        </ControlTemplate>
+        <ControlTemplate x:Key="textBoxTemplate" TargetType="UserControl">
+            <StackPanel FocusManager.FocusedElement="{Binding ElementName=textBox}">
+                <TextBox x:Name="textBox" Text="{Binding ElementName=editableTextBox, Path=Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Visibility="{Binding ElementName=editableTextBox, Mode=TwoWay, Path=IsEditMode, Converter={StaticResource boolToVisibility}}" LostFocus="textBox_LostFocus"></TextBox>
+            </StackPanel>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Setter Property="Template" Value="{StaticResource textBlockTemplate}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=editableTextBox, Path=IsEditMode}" Value="True">
+                    <Setter Property="Template" Value="{StaticResource textBoxTemplate}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+</UserControl>
