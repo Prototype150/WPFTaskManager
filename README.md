@@ -1,4 +1,4 @@
-This is a WPF frontend used with a task manager server.
+This is a WPF frontend application used with a task manager server.
 The application for the server can be found at: https://github.com/Prototype150/TaskManagerServer
 
 To use the application you should:
