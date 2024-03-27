@@ -18,9 +18,10 @@ namespace DesktopTaskManager
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(string serverIp, string serverPort)
         {
-            DataContext = new MainWindowViewModel(new AccountService(), new TaskService());
+            string _connectionString = $"https://{serverIp}:{serverPort}";
+            DataContext = new MainWindowViewModel(new AccountService(_connectionString), new TaskService(_connectionString));
 
             InitializeComponent();
         }

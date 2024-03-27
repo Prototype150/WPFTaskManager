@@ -22,6 +22,26 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="polyStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1,AncestorType=Grid,Mode=FindAncestor}, Path=IsMouseOver}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="80 0 0 0" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="0 0 0 0" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Grid MaxWidth="{Binding ElementName=mainControl, Path=ActualWidth}" Height="50" HorizontalAlignment="Stretch" x:Name="mainGrid" Background="{Binding IsCompleted, Converter={StaticResource boolToColorConverter}}">
         <Grid.ColumnDefinitions>
@@ -30,13 +50,65 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
-        <Border Grid.Column="0" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
-            <Button Command="{Binding UpdateTaskStateCommand}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>
-        </Border>
-        <customControls:EditableTextBlock Grid.Column="1" Text="{Binding Task, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-        <TextBlock Grid.Column="1" Text="Task is not updated. Plese, use the 'update' or 'update all' button!" Visibility="{Binding IsUpdated, Converter={StaticResource boolToVisibilityReversedConverter}}" Foreground="Blue"  VerticalAlignment="Bottom"/>
+        <Canvas Width="50" Height="50">
+            <Button Command="{Binding UpdateTaskStateCommand}" Height="40" Width="40" Margin="5">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="Width" Value="40"/>
+                        <Setter Property="Margin" Value="5"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1,AncestorType=Grid,Mode=FindAncestor}, Path=IsMouseOver}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin" To="45 5 5 5" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin" To="5 5 5 5" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Polygon Points="0 45, 0 50, 50 0, 45 0" Fill="Red"/>
+            <Polygon Points="0 0, 0 45, 45 0" Fill="{Binding IsCompleted, Converter={StaticResource boolToColorConverter}}"/>
+            <Polygon x:Name="test" Style="{StaticResource polyStyle}" Points="5 50, 50 50, 50 5" Fill="{Binding IsCompleted, Converter={StaticResource boolToColorConverter}}"/>
+            <Polygon Style="{StaticResource polyStyle}" Points="0 50, 5 50, 50 5, 50 0" Fill="Black"/>
+            <Canvas.Style>
+                <Style TargetType="Canvas">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1,AncestorType=Grid,Mode=FindAncestor}, Path=IsMouseOver}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Width" To="135" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Width" To="50" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Canvas.Style>
+        </Canvas>
+        <customControls:EditableTextBlock Grid.Column="1" Text="{Binding Task, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" FontSize="21" Margin="5 0 0 0" Background="Blue"/>
+        <TextBlock Margin="10 0 0 0" Grid.Column="1" Text="Task is not updated. Plese, use the 'update' or 'update all' button!" Visibility="{Binding IsUpdated, Converter={StaticResource boolToVisibilityReversedConverter}}" Foreground="Blue"  VerticalAlignment="Bottom"/>
         <Border Grid.Column="2" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
-            <Button Command="{Binding UpdateTaskCommand}" OverridesDefaultStyle="True" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40">
+            <Button x:Name="sus" Command="{Binding UpdateTaskCommand}" OverridesDefaultStyle="True" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Template">
@@ -51,7 +123,7 @@
             </Button>
         </Border>
         <Border Grid.Column="3" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
-            <Button HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>
+            <Button Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorLevel=1, AncestorType=local:MainView}}" CommandParameter="{Binding Id}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>
         </Border>
     </Grid>
 </UserControl>

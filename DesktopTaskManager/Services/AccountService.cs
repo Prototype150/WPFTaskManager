@@ -14,7 +14,12 @@ namespace DesktopTaskManager.Services
 {
     public class AccountService : IAccountService
     {
-        private string _connectionString = "https://26.218.3.87:7025";
+        private string _connectionString;
+
+        public AccountService(string connectionString) {
+            _connectionString = connectionString;
+        }
+
         public async Task<(AccountModel? account, string message)> Login(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username))

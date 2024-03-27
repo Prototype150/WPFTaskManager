@@ -5,35 +5,55 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:views="clr-namespace:DesktopTaskManager.View"
              xmlns:mainViewModels="clr-namespace:DesktopTaskManager.ViewModel.Main"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             VerticalAlignment="Stretch"
+             x:Name="mainControl"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <UserControl.Resources>
+        <ResourceDictionary Source="../Resources/GeneralResources.xaml"/>
+    </UserControl.Resources>
+    <Grid MaxHeight="{Binding ElementName=mainControl, Path=ActualHeight}" x:Name="mainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" MaxWidth="100"/>
+            <ColumnDefinition Width="1*" MaxWidth="250" MinWidth="100"/>
             <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <StackPanel Grid.Column="0">
-            <TextBlock Text="{x:Static mainViewModels:MainViewModel.Username}"/>
-            <TextBlock Text="{x:Static mainViewModels:MainViewModel.Id}"/>
-            <Button Content="Logout" Width="100" HorizontalAlignment="Left" Command="{Binding LogoutCommand}"/>
+            <TextBlock Text="{x:Static mainViewModels:MainViewModel.Username}" HorizontalAlignment="Center" d:Text="Test" FontSize="30" Margin="0 20"/>
+            <Button Style="{StaticResource generalButtonStyle}" Height="30" Margin="20 0" Command="{Binding LogoutCommand}">
+                <TextBlock FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    Logout
+                </TextBlock>
+            </Button>
         </StackPanel>
-        <StackPanel Grid.Column="1" >
-            <ListView ItemsSource="{Binding Tasks}" x:Name="taskList" HorizontalContentAlignment="Stretch">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <views:TaskView/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <Grid>
+        <Grid Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer Grid.Row="0">
+                <ListView ItemsSource="{Binding Tasks}" x:Name="taskList" HorizontalContentAlignment="Stretch">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <views:TaskView/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollViewer>
+            <TextBox Grid.Row="1" x:Name="newTaskTextBox" Text="{Binding NewTask, Mode=TwoWay}"/>
+            <Grid Grid.Row="2" x:Name="buttonsGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Width="100" HorizontalAlignment="Left" Content="Add new task"/>
+                <Button Grid.Column="0" Command="{Binding AddTaskCommand}" Width="100" HorizontalAlignment="Left" Content="Add new task"/>
+                <TextBlock Grid.Column="1"/>
                 <Button Grid.Column="2" Command="{Binding UpdateAllTasksCommand}" Width="100" HorizontalAlignment="Left" Content="Update all tasks"/>
             </Grid>
-        </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

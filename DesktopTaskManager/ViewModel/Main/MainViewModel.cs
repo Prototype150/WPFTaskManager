@@ -4,6 +4,7 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -34,8 +35,21 @@ namespace DesktopTaskManager.ViewModel.Main
             get => MainAccount?.Id.ToString() ?? "";
         }
 
+        private string _newTask;
+        public string NewTask
+        {
+            get { return _newTask; }
+            set
+            {
+                _newTask = value;
+                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(NewTask)));
+            }
+        }
+
         public ICommand LogoutCommand { get; set; }
         public ICommand UpdateAllTasksCommand { get; set; }
+        public ICommand DeleteTaskCommand { get; set; }
+        public ICommand AddTaskCommand { get; set; }
 
         public MainViewModel(ITaskService taskService)
         {
@@ -44,8 +58,38 @@ namespace DesktopTaskManager.ViewModel.Main
             
             LogoutCommand = new RelayCommand(Logout);
             UpdateAllTasksCommand = new RelayCommand(UpdateAllTasks);
+            DeleteTaskCommand = new RelayCommand(DeleteTask);
+            AddTaskCommand = new RelayCommand(AddTask);
 
             GetTasks();
+        }
+
+        private async void AddTask(object? parameter)
+        {
+            if (!string.IsNullOrWhiteSpace(NewTask))
+            {
+                var result = await _taskService.AddTask(new TaskModel(MainAccount.Id, NewTask, Tasks.Count()));
+                if(result.result != null)
+                {
+                    Tasks.Add(new TaskViewModel(result.result.Id, result.result.Task, true, false, result.result.SortId, _taskService));
+                    OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Tasks)));
+                    NewTask = string.Empty;
+                }
+            }
+        }
+
+        private async void DeleteTask(object? parameter)
+        {
+            int taskId = (int)(parameter ?? -1);
+            if(taskId > -1)
+            {
+                var result = await _taskService.DeleteTask(taskId);
+                if (result.result)
+                {
+                    Tasks.Remove(Tasks.FirstOrDefault(x => x.Id == taskId));
+                    OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Tasks)));
+                }
+            }
         }
 
         private void UpdateAllTasks(object? parameter)
@@ -70,6 +114,7 @@ namespace DesktopTaskManager.ViewModel.Main
             }
 
             var tasks = await _taskService.GetAccountTasks(MainAccount.Id);
+
             foreach (var task in tasks.tasks)
             {
                 Tasks.Add(new TaskViewModel(task.Id ,task.Task, true, task.IsCompleted, task.SortId, _taskService));

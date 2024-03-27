@@ -22,31 +22,19 @@ namespace DesktopTaskManager.CustomControl
     public partial class EditableTextBlock : UserControl
     {
         public static readonly DependencyProperty IsEditModeProperty =
-            DependencyProperty.Register(nameof(IsEditMode), typeof(bool), typeof(EditableTextBlock), new PropertyMetadata(false, IsEditPropertyChanged));
+            DependencyProperty.Register(nameof(IsEditMode), typeof(bool), typeof(EditableTextBlock), new PropertyMetadata(false));
         public bool IsEditMode
         {
             get {  return (bool)GetValue(IsEditModeProperty); }
             set { SetValue(IsEditModeProperty, value); }
         }
 
-        private static void IsEditPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            
-        }
-
-
         public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register(nameof(Text), typeof(string), typeof(EditableTextBlock), new PropertyMetadata("", TextPropertyChanged));
-
+            DependencyProperty.Register(nameof(Text), typeof(string), typeof(EditableTextBlock), new PropertyMetadata(""));
         public string Text
         {
             get { return (string)GetValue(TextProperty); } 
             set { SetValue(TextProperty, value); }
-        }
-
-        private static void TextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            
         }
 
         public EditableTextBlock()
