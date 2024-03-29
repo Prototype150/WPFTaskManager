@@ -9,11 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Images\green_lamp.png" />
+    <None Remove="Resources\Images\red_lamp.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Model\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\TaskManagerServer\Models\Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Images\green_lamp.png" />
+    <Resource Include="Resources\Images\red_lamp.png" />
   </ItemGroup>
 
 </Project>
