@@ -44,6 +44,7 @@ namespace DesktopTaskManager.ViewModel
                 case MainViewType.Main:
                     CurrentViewModel = new MainViewModel(_taskService);
                     CurrentViewModel.OnMainViewChangeRequired += SwitchMainView;
+                    (CurrentViewModel as MainViewModel)?.GetTasks();
                     break;
             }
         }

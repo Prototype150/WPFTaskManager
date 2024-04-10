@@ -51,5 +51,15 @@ namespace DesktopTaskManager.CustomControl
         {
             IsEditMode = true;
         }
+
+        private void editableTextBox_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void editableTextBox_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

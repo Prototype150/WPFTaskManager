@@ -20,10 +20,6 @@ namespace DesktopTaskManager.View
     /// </summary>
     public partial class MainView : UserControl
     {
-        public double ScrollHeight
-        {
-            get { return mainControl.ActualHeight - buttonsGrid?.ActualHeight ?? 0 - newTaskTextBox?.ActualHeight ?? 0; }
-        }
         public MainView()
         {
             InitializeComponent();

@@ -9,8 +9,15 @@
              VerticalAlignment="Stretch"
              x:Name="mainControl"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.InputBindings>
+        <KeyBinding Gesture="Enter" Command="{Binding AddTaskCommand}"/>
+    </UserControl.InputBindings>
     <UserControl.Resources>
-        <ResourceDictionary Source="../Resources/GeneralResources.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/GeneralResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid MaxHeight="{Binding ElementName=mainControl, Path=ActualHeight}" x:Name="mainGrid">
         <Grid.ColumnDefinitions>
@@ -20,21 +27,78 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Column="0">
-            <TextBlock Text="{x:Static mainViewModels:MainViewModel.Username}" HorizontalAlignment="Center" d:Text="Test" FontSize="30" Margin="0 20"/>
-            <Button Style="{StaticResource generalButtonStyle}" Height="30" Margin="20 0" Command="{Binding LogoutCommand}">
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{x:Static mainViewModels:MainViewModel.Username}" HorizontalAlignment="Center" d:Text="Test" FontSize="30" Margin="0 20"/>
+            <Button Grid.Row="1" Style="{StaticResource generalButtonStyle}" Height="30" Margin="20 0" Command="{Binding LogoutCommand}">
                 <TextBlock FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center">
                     Logout
                 </TextBlock>
             </Button>
-        </StackPanel>
+            <Button IsEnabled="{Binding IsUpdating, Converter={StaticResource reverseBoolConverter}}" Command="{Binding UpdateAllTasksCommand}" Grid.Row="3" OverridesDefaultStyle="True">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Height" Value="70"/> 
+                        <Setter Property="Width" Value="70"/>
+                        <Setter Property="Margin" Value="0 0 0 50"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Grid RenderTransformOrigin="0.5, 0.5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Image>
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                                    <Setter Property="Source" Value="../Resources/Images/sync.png"/>
+                                                    <Setter Property="Width" Value="60"/>
+                                                    <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+                                                    <Setter Property="Height" Value="60"/>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                        <Grid.RenderTransform>
+                                            <RotateTransform Angle="0"/>
+                                        </Grid.RenderTransform>
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsUpdating}" Value="True">
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard Name="loadingAnimation">
+                                                                <Storyboard>
+                                                                    <DoubleAnimation From="0" To="360" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)" Duration="0:0:1" RepeatBehavior="Forever"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <StopStoryboard BeginStoryboardName="loadingAnimation"/>
+                                                        </DataTrigger.ExitActions>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                    </Grid>
+                                    
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
         <Grid Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <ScrollViewer Grid.Row="0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0">
                 <ListView ItemsSource="{Binding Tasks}" x:Name="taskList" HorizontalContentAlignment="Stretch">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -43,17 +107,39 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollViewer>
-            <TextBox Grid.Row="1" x:Name="newTaskTextBox" Text="{Binding NewTask, Mode=TwoWay}"/>
-            <Grid Grid.Row="2" x:Name="buttonsGrid">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Command="{Binding AddTaskCommand}" Width="100" HorizontalAlignment="Left" Content="Add new task"/>
-                <TextBlock Grid.Column="1"/>
-                <Button Grid.Column="2" Command="{Binding UpdateAllTasksCommand}" Width="100" HorizontalAlignment="Left" Content="Update all tasks"/>
-            </Grid>
+            <Border Grid.Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                
+                    <TextBox Background="Transparent" x:Name="newTaskTextBox" FontSize="30" Text="{Binding NewTask, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Due date:"/>
+                        <DatePicker x:Name="datePicker" SelectedDate="{Binding DueDate}" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom"/>
+                    </StackPanel>
+                    <Button x:Name="sendButton" OverridesDefaultStyle="True" Command="{Binding AddTaskCommand}" Grid.Column="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border CornerRadius="21 21 21 21" Background="LightGray" Width="42" Height="42">
+                                    <Canvas>
+                                        <Polygon Name="ArrowPolygon" Points="10 7, 39 21, 10 35, 15 21">
+                                            <Polygon.Style>
+                                                <Style TargetType="Polygon">
+                                                    <Setter Property="Margin" Value="0 0 0 0"/>
+                                                    <Setter Property="Fill" Value="Gray"/>
+                                                </Style>
+                                            </Polygon.Style>
+                                        </Polygon>
+                                    </Canvas>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

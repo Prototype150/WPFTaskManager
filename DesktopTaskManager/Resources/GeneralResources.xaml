@@ -2,6 +2,7 @@
                     xmlns:converters="clr-namespace:DesktopTaskManager.Converters"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <converters:HalfConverter x:Key="halfConverter"/>
+    <converters:ReverseBoolConverter x:Key="reverseBoolConverter"/>
     <Style x:Key="generalButtonStyle" TargetType="Button">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>

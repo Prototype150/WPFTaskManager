@@ -6,9 +6,15 @@
         xmlns:local="clr-namespace:DesktopTaskManager"
         xmlns:viewModels="clr-namespace:DesktopTaskManager.ViewModel.Main"
         xmlns:views="clr-namespace:DesktopTaskManager.View"
+        xmlns:customControls="clr-namespace:DesktopTaskManager.CustomControl"
+        xmlns:converters="clr-namespace:DesktopTaskManager.Converters"
         mc:Ignorable="d"
+        UseLayoutRounding="True"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Window.Resources>
+        <converters:BoolToColorConverter x:Key="boolToColorConverter"/>
+    </Window.Resources>
+    <Grid x:Uid="mainGrid" Background="Transparent">
         <ContentControl Content="{Binding CurrentViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type viewModels:LoginViewModel}">

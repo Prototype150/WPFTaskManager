@@ -25,6 +25,28 @@ namespace DesktopTaskManager.ViewModel.Main
             set;
         }
 
+        private bool _isAdding;
+        public bool IsAdding
+        {
+            get { return _isAdding; }
+            set 
+            { 
+                _isAdding = value;
+                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsAdding)));
+            }
+        }
+
+        private DateTime _dueDate;
+        public DateTime DueDate
+        {
+            get { return _dueDate; }
+            set
+            {
+                _dueDate = value;
+                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(DueDate)));
+            }
+        }
+
         public static string Username
         {
             get => MainAccount?.Username ?? "";
@@ -46,6 +68,18 @@ namespace DesktopTaskManager.ViewModel.Main
             }
         }
 
+        private bool _isUpdating;
+        public bool IsUpdating
+        {
+            get => _isUpdating;
+            set
+            {
+                _isUpdating = value;
+                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsUpdating)));
+            }
+
+        }
+
         public ICommand LogoutCommand { get; set; }
         public ICommand UpdateAllTasksCommand { get; set; }
         public ICommand DeleteTaskCommand { get; set; }
@@ -57,25 +91,26 @@ namespace DesktopTaskManager.ViewModel.Main
             _taskService = taskService;
             
             LogoutCommand = new RelayCommand(Logout);
-            UpdateAllTasksCommand = new RelayCommand(UpdateAllTasks);
+            UpdateAllTasksCommand = new AsyncCommandRelay(UpdateAllTasks);
             DeleteTaskCommand = new RelayCommand(DeleteTask);
             AddTaskCommand = new RelayCommand(AddTask);
-
-            GetTasks();
+            DueDate = DateTime.Now;
         }
 
         private async void AddTask(object? parameter)
         {
+            IsAdding = true;
             if (!string.IsNullOrWhiteSpace(NewTask))
             {
-                var result = await _taskService.AddTask(new TaskModel(MainAccount.Id, NewTask, Tasks.Count()));
+                var result = await _taskService.AddTask(new TaskModel(MainAccount.Id, NewTask, Tasks.Count(), TaskState.InProgress, DateOnly.FromDateTime(DueDate)));
                 if(result.result != null)
                 {
-                    Tasks.Add(new TaskViewModel(result.result.Id, result.result.Task, true, false, result.result.SortId, _taskService));
+                    Tasks.Add(new TaskViewModel(result.result.Id, result.result.Task, true, false, result.result.SortId, result.result.DueDate, TaskState.InProgress, _taskService));
                     OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Tasks)));
                     NewTask = string.Empty;
                 }
             }
+            IsAdding = false;
         }
 
         private async void DeleteTask(object? parameter)
@@ -92,12 +127,28 @@ namespace DesktopTaskManager.ViewModel.Main
             }
         }
 
-        private void UpdateAllTasks(object? parameter)
+        private void UpdateTaskStates()
         {
+            foreach (var task in Tasks)
+            {
+                if((task.TaskState == TaskState.InProgress || task.TaskState == TaskState.Extended)&& task.DueDate < DateOnly.FromDateTime(DateTime.Now))
+                {
+                    task.TaskState = TaskState.Failed;
+                }
+            }
+
+            UpdateAllTasks(null);
+        }
+
+        private async Task UpdateAllTasks(object? parameter)
+        {
+            IsUpdating = true;
+            List<Task> tasks = new List<Task>();
             foreach (var task in Tasks.Where(x => !x.IsUpdated))
             {
-                task.UpdateTaskCommand.Execute(null);
+                tasks.Add(Task.Run(async () => await task.UpdateTask(parameter)));
             }
+            Task.WhenAll(tasks).ContinueWith(x => IsUpdating = false);
         }
 
         private void Logout(object? parameter)
@@ -115,11 +166,16 @@ namespace DesktopTaskManager.ViewModel.Main
 
             var tasks = await _taskService.GetAccountTasks(MainAccount.Id);
 
-            foreach (var task in tasks.tasks)
+            if (tasks.tasks != null)
             {
-                Tasks.Add(new TaskViewModel(task.Id ,task.Task, true, task.IsCompleted, task.SortId, _taskService));
+                foreach (var task in tasks.tasks)
+                {
+                    Tasks.Add(new TaskViewModel(task.Id, task.Task, true, task.IsCompleted, task.SortId, task.DueDate, task.State, _taskService));
+                }
+
+                UpdateTaskStates();
+                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Tasks)));
             }
-            OnPropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(Tasks)));
         }
     }
 }

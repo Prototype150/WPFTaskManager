@@ -7,12 +7,18 @@
              xmlns:converters="clr-namespace:DesktopTaskManager.Converters"
              xmlns:customControls="clr-namespace:DesktopTaskManager.CustomControl"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:models="clr-namespace:Models;assembly=Models"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              x:Name="mainControl"
              mc:Ignorable="d">
     <UserControl.Resources>
+        <Color x:Key="taskNo">LightCoral</Color>
+        <Color x:Key="taskYes">LightGreen</Color>
+        <DynamicResource x:Key="taskColor" ResourceKey="taskNo"/>
         <converters:BoolToColorConverter x:Key="boolToColorConverter"/>
         <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <converters:BoolToVisibilityReversedConverter x:Key="boolToVisibilityReversedConverter"/>
+        <converters:DateTimeToDateOnlyConverter x:Key="dateTimeToDateOnlyConverter"/>
         <Style x:Key="taskButtonStyle" TargetType="Border">
             <Setter Property="Visibility" Value="Collapsed"/>
             <Setter Property="Height" Value="50"/>
@@ -23,6 +29,28 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+
+        <LinearGradientBrush x:Key="taskCompleted">
+            <GradientStop Color="Green" Offset="0"/>
+            <GradientStop Color="Transparent" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="taskFailed">
+            <GradientStop Color="Red" Offset="0"/>
+            <GradientStop Color="Transparent" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="taskExtendedComplete">
+            <GradientStop Color="LightGreen" Offset="0"/>
+            <GradientStop Color="Transparent" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="taskExtended">
+            <GradientStop Color="Orange" Offset="0"/>
+            <GradientStop Color="Transparent" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="taskInProgress">
+            <GradientStop Color="Gray" Offset="0"/>
+            <GradientStop Color="Transparent" Offset="1"/>
+        </LinearGradientBrush>
+
         <Style x:Key="movementStyle">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Grid}, Path=IsMouseOver}" Value="True">
@@ -44,20 +72,60 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <Grid Background="{Binding IsCompleted, Converter={StaticResource boolToColorConverter}}" MaxWidth="{Binding ElementName=mainControl, Path=ActualWidth}" Height="50" HorizontalAlignment="Stretch" x:Name="mainGrid">
+    <Grid MaxWidth="{Binding ElementName=mainControl, Path=ActualWidth}" MinHeight="50" HorizontalAlignment="Stretch" x:Name="mainGrid" MouseLeave="mainGrid_MouseLeave">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
-        <Image Style="{StaticResource movementStyle}" Margin="-42 0 0 0" Source="/Resources/Images/red_lamp.png" SnapsToDevicePixels="True" Visibility="{Binding IsCompleted, Converter={StaticResource boolToVisibilityReversedConverter}}"/>
-        <Image Style="{StaticResource movementStyle}" Margin="-42 0 0 0" Source="/Resources/Images/green_lamp.png" SnapsToDevicePixels="True" Visibility="{Binding IsCompleted, Converter={StaticResource boolToVisibilityConverter}}"/>
-        <Button Click="Button_Click" Command="{Binding UpdateTaskStateCommand}" Style="{StaticResource movementStyle}" Margin="-6 0 0 0" Width="36" Height="42" HorizontalAlignment="Left"/>
-        <customControls:EditableTextBlock Grid.Column="1" Text="{Binding Task, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" FontSize="21" Margin="5 0 0 0" Background="Blue"/>
+        <Rectangle Grid.ColumnSpan="4">
+            <Rectangle.Style>
+                <Style TargetType="Rectangle">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TaskState}" Value="{x:Static models:TaskState.Completed}">
+                            <Setter Property="Fill" Value="{StaticResource taskCompleted}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TaskState}" Value="{x:Static models:TaskState.ExtendedCompleted}">
+                            <Setter Property="Fill" Value="{StaticResource taskExtendedComplete}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TaskState}" Value="{x:Static models:TaskState.Extended}">
+                            <Setter Property="Fill" Value="{StaticResource taskExtended}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TaskState}" Value="{x:Static models:TaskState.Failed}">
+                            <Setter Property="Fill" Value="{StaticResource taskFailed}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TaskState}" Value="{x:Static models:TaskState.InProgress}">
+                            <Setter Property="Fill" Value="{StaticResource taskInProgress}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
+        <Image Height="50" RenderOptions.BitmapScalingMode="HighQuality" Style="{StaticResource movementStyle}" Margin="-42 0 0 0" Source="/Resources/Images/red_lamp.png" SnapsToDevicePixels="True" Visibility="{Binding IsCompleted, Converter={StaticResource boolToVisibilityReversedConverter}}"/>
+        <Image RenderOptions.BitmapScalingMode="HighQuality" Style="{StaticResource movementStyle}" Margin="-42 0 0 0" Source="/Resources/Images/green_lamp.png" SnapsToDevicePixels="True" Visibility="{Binding IsCompleted, Converter={StaticResource boolToVisibilityConverter}}"/>
+        <Button Command="{Binding CompleteTaskCommand}" Style="{StaticResource movementStyle}" Margin="-48 0 0 0" Width="36" Height="42" HorizontalAlignment="Left"/>
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <customControls:EditableTextBlock Grid.Column="0" Text="{Binding Task, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" FontSize="21" Margin="5 0 0 0" Background="Blue"/>
+            <TextBlock VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Right" Text="{Binding DueDateString}"/>
+        </Grid>
         <TextBlock Margin="10 0 0 0" Grid.Column="1" Text="Task is not updated. Plese, use the 'update' or 'update all' button!" Visibility="{Binding IsUpdated, Converter={StaticResource boolToVisibilityReversedConverter}}" Foreground="Blue"  VerticalAlignment="Bottom"/>
-        <Border Grid.Column="2" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
-            <Button x:Name="sus" Command="{Binding UpdateTaskCommand}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>
+        <Border VerticalAlignment="Center" Height="auto" Width="auto" Grid.Column="2" Style="{StaticResource ResourceKey=taskButtonStyle}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Button Click="Button_Click" Grid.Row="0" CommandParameter="{Binding Source={x:Static sys:DateTime.Today}}" HorizontalAlignment="Right" VerticalAlignment="Center" Height="40" Width="40"/>
+                <Calendar GotMouseCapture="extendCalendar_GotMouseCapture" Visibility="Collapsed" x:Name="extendCalendar" Grid.Row="1"/>
+                <Button Visibility="Collapsed" x:Name="confirmButton" Grid.Row="2" Command="{Binding ExtendTaskCommand}" CommandParameter="{Binding ElementName=extendCalendar, Path=SelectedDate}" Content="Confirm" Margin="0 0"/>
+            </Grid>
         </Border>
         <Border Grid.Column="3" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
             <Button Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorLevel=1, AncestorType=local:MainView}}" CommandParameter="{Binding Id}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>

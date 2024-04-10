@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Resources\Images\green_lamp.png" />
     <None Remove="Resources\Images\red_lamp.png" />
+    <None Remove="Resources\Images\sync.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +25,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\green_lamp.png" />
     <Resource Include="Resources\Images\red_lamp.png" />
+    <Resource Include="Resources\Images\sync.png" />
   </ItemGroup>
 
 </Project>
