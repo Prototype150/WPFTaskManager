@@ -4,6 +4,7 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -68,6 +69,11 @@ namespace DesktopTaskManager.ViewModel.Main
             }
         }
 
+        public string DueTodayString
+        {
+            get { return "Tasks due today: " + Tasks.Where(x => x.DueDate == DateOnly.FromDateTime(DateTime.Today) && (x.TaskState == TaskState.Extended || x.TaskState == TaskState.InProgress)).Count(); }
+        }
+
         private bool _isUpdating;
         public bool IsUpdating
         {
@@ -95,6 +101,13 @@ namespace DesktopTaskManager.ViewModel.Main
             DeleteTaskCommand = new RelayCommand(DeleteTask);
             AddTaskCommand = new RelayCommand(AddTask);
             DueDate = DateTime.Now;
+            Tasks.CollectionChanged += TasksChanged;
+        }
+
+        private void TasksChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Tasks)));
+            OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(DueTodayString)));
         }
 
         private async void AddTask(object? parameter)
@@ -106,7 +119,6 @@ namespace DesktopTaskManager.ViewModel.Main
                 if(result.result != null)
                 {
                     Tasks.Add(new TaskViewModel(result.result.Id, result.result.Task, true, false, result.result.SortId, result.result.DueDate, TaskState.InProgress, _taskService));
-                    OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Tasks)));
                     NewTask = string.Empty;
                 }
             }
@@ -122,7 +134,6 @@ namespace DesktopTaskManager.ViewModel.Main
                 if (result.result)
                 {
                     Tasks.Remove(Tasks.FirstOrDefault(x => x.Id == taskId));
-                    OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Tasks)));
                 }
             }
         }
@@ -148,6 +159,7 @@ namespace DesktopTaskManager.ViewModel.Main
             {
                 tasks.Add(Task.Run(async () => await task.UpdateTask(parameter)));
             }
+
             Task.WhenAll(tasks).ContinueWith(x => IsUpdating = false);
         }
 
@@ -174,7 +186,6 @@ namespace DesktopTaskManager.ViewModel.Main
                 }
 
                 UpdateTaskStates();
-                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Tasks)));
             }
         }
     }

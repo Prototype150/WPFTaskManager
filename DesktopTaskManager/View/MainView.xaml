@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:views="clr-namespace:DesktopTaskManager.View"
              xmlns:mainViewModels="clr-namespace:DesktopTaskManager.ViewModel.Main"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              VerticalAlignment="Stretch"
              x:Name="mainControl"
@@ -35,61 +36,11 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="{x:Static mainViewModels:MainViewModel.Username}" HorizontalAlignment="Center" d:Text="Test" FontSize="30" Margin="0 20"/>
-            <Button Grid.Row="1" Style="{StaticResource generalButtonStyle}" Height="30" Margin="20 0" Command="{Binding LogoutCommand}">
+            <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding DueTodayString}" FontSize="15"/>
+            <Button VerticalAlignment="Bottom" Grid.Row="3" Style="{StaticResource generalButtonStyle}" Height="30" Margin="20 20" Command="{Binding LogoutCommand}">
                 <TextBlock FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center">
                     Logout
                 </TextBlock>
-            </Button>
-            <Button IsEnabled="{Binding IsUpdating, Converter={StaticResource reverseBoolConverter}}" Command="{Binding UpdateAllTasksCommand}" Grid.Row="3" OverridesDefaultStyle="True">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Height" Value="70"/> 
-                        <Setter Property="Width" Value="70"/>
-                        <Setter Property="Margin" Value="0 0 0 50"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Grid RenderTransformOrigin="0.5, 0.5" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Image>
-                                            <Image.Style>
-                                                <Style TargetType="Image">
-                                                    <Setter Property="SnapsToDevicePixels" Value="True"/>
-                                                    <Setter Property="Source" Value="../Resources/Images/sync.png"/>
-                                                    <Setter Property="Width" Value="60"/>
-                                                    <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
-                                                    <Setter Property="Height" Value="60"/>
-                                                </Style>
-                                            </Image.Style>
-                                        </Image>
-                                        <Grid.RenderTransform>
-                                            <RotateTransform Angle="0"/>
-                                        </Grid.RenderTransform>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsUpdating}" Value="True">
-                                                        <DataTrigger.EnterActions>
-                                                            <BeginStoryboard Name="loadingAnimation">
-                                                                <Storyboard>
-                                                                    <DoubleAnimation From="0" To="360" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)" Duration="0:0:1" RepeatBehavior="Forever"/>
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.EnterActions>
-                                                        <DataTrigger.ExitActions>
-                                                            <StopStoryboard BeginStoryboardName="loadingAnimation"/>
-                                                        </DataTrigger.ExitActions>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                    </Grid>
-                                    
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Button.Style>
             </Button>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch">
@@ -118,7 +69,7 @@
                     <TextBox Background="Transparent" x:Name="newTaskTextBox" FontSize="30" Text="{Binding NewTask, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Due date:"/>
-                        <DatePicker x:Name="datePicker" SelectedDate="{Binding DueDate}" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom"/>
+                        <DatePicker DisplayDateStart="{Binding Source={x:Static sys:DateTime.Today}, Mode=OneWay}" x:Name="datePicker" SelectedDate="{Binding DueDate}" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom"/>
                     </StackPanel>
                     <Button x:Name="sendButton" OverridesDefaultStyle="True" Command="{Binding AddTaskCommand}" Grid.Column="2">
                         <Button.Template>

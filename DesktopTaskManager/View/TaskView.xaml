@@ -57,14 +57,14 @@
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-6 0 0 0" Duration="0:0:0.2"/>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-6 0 0 0" Duration="0:0:0.1"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
                     <DataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-42 0 0 0" Duration="0:0:0.2"/>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-42 0 0 0" Duration="0:0:0.1"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.ExitActions>
@@ -103,8 +103,43 @@
             </Rectangle.Style>
         </Rectangle>
         <Image Height="50" RenderOptions.BitmapScalingMode="HighQuality" Style="{StaticResource movementStyle}" Margin="-42 0 0 0" Source="/Resources/Images/red_lamp.png" SnapsToDevicePixels="True" Visibility="{Binding IsCompleted, Converter={StaticResource boolToVisibilityReversedConverter}}"/>
-        <Image RenderOptions.BitmapScalingMode="HighQuality" Style="{StaticResource movementStyle}" Margin="-42 0 0 0" Source="/Resources/Images/green_lamp.png" SnapsToDevicePixels="True" Visibility="{Binding IsCompleted, Converter={StaticResource boolToVisibilityConverter}}"/>
-        <Button Command="{Binding CompleteTaskCommand}" Style="{StaticResource movementStyle}" Margin="-48 0 0 0" Width="36" Height="42" HorizontalAlignment="Left"/>
+        <Image Height="50" RenderOptions.BitmapScalingMode="HighQuality" Style="{StaticResource movementStyle}" Margin="-42 0 0 0" Source="/Resources/Images/green_lamp.png" SnapsToDevicePixels="True" Visibility="{Binding IsCompleted, Converter={StaticResource boolToVisibilityConverter}}"/>
+        <Button Command="{Binding CompleteTaskCommand}">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="OverridesDefaultStyle" Value="True"/>
+                    <Setter Property="Margin" Value="-48 0 0 0"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Grid Width="36" Height="42" Background="Transparent">
+                                    
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Grid}, Path=IsMouseOver}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-6 0 0 0" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-42 0 0 0" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
         <Grid Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
@@ -123,7 +158,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Button Click="Button_Click" Grid.Row="0" CommandParameter="{Binding Source={x:Static sys:DateTime.Today}}" HorizontalAlignment="Right" VerticalAlignment="Center" Height="40" Width="40"/>
-                <Calendar GotMouseCapture="extendCalendar_GotMouseCapture" Visibility="Collapsed" x:Name="extendCalendar" Grid.Row="1"/>
+                <Calendar DisplayDateStart="{Binding Source={x:Static sys:DateTime.Today}, Mode=OneWay}" GotMouseCapture="extendCalendar_GotMouseCapture" Visibility="Collapsed" x:Name="extendCalendar" Grid.Row="1"/>
                 <Button Visibility="Collapsed" x:Name="confirmButton" Grid.Row="2" Command="{Binding ExtendTaskCommand}" CommandParameter="{Binding ElementName=extendCalendar, Path=SelectedDate}" Content="Confirm" Margin="0 0"/>
             </Grid>
         </Border>

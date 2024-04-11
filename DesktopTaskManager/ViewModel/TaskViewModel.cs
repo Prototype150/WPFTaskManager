@@ -42,6 +42,8 @@ namespace DesktopTaskManager.ViewModel
             }
         }
 
+        
+
         private TaskState _taskState;
         public TaskState TaskState
         {
@@ -68,16 +70,9 @@ namespace DesktopTaskManager.ViewModel
             }
         }
 
-        private bool _isCompleted;
         public bool IsCompleted
         {
-            get { return _isCompleted; }
-            set
-            {
-                _isCompleted = value;
-                IsUpdated = false;
-                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsCompleted)));
-            }
+            get { return TaskState == TaskState.Completed || TaskState == TaskState.ExtendedCompleted; }
         }
 
         private int _sortId;
@@ -114,7 +109,6 @@ namespace DesktopTaskManager.ViewModel
             TaskState = taskState;
             SortId = sortId;
             Task = task;
-            IsCompleted = isCompleted;
             IsUpdated = isUpdated;
             DueDate = dueDate;
 
@@ -150,6 +144,7 @@ namespace DesktopTaskManager.ViewModel
                     }
             }
 
+            OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsCompleted)));
             UpdateTask(null);
         }
 
