@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DesktopTaskManager.CustomControl;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,14 @@ namespace DesktopTaskManager.View
     /// </summary>
     public partial class TaskView : UserControl
     {
+        public static readonly DependencyProperty IsTaskOpenProperty =
+            DependencyProperty.Register(nameof(IsTaskOpen), typeof(bool), typeof(TaskView), new PropertyMetadata(false));
+        public bool IsTaskOpen
+        {
+            get { return (bool)GetValue(IsTaskOpenProperty); }
+            set { SetValue(IsTaskOpenProperty, value); }
+        }
+
         public TaskView()
         {
             InitializeComponent();
@@ -28,14 +37,12 @@ namespace DesktopTaskManager.View
 
         private void mainGrid_MouseLeave(object sender, MouseEventArgs e)
         {
-            extendCalendar.Visibility = Visibility.Collapsed;
-            confirmButton.Visibility = Visibility.Collapsed;
+            IsTaskOpen = false;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            extendCalendar.Visibility = extendCalendar.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-            confirmButton.Visibility = confirmButton.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            IsTaskOpen = !IsTaskOpen;
         }
 
         private void extendCalendar_GotMouseCapture(object sender, MouseEventArgs e)

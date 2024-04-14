@@ -12,67 +12,73 @@
              x:Name="mainControl"
              mc:Ignorable="d">
     <UserControl.Resources>
-        <Color x:Key="taskNo">LightCoral</Color>
-        <Color x:Key="taskYes">LightGreen</Color>
-        <DynamicResource x:Key="taskColor" ResourceKey="taskNo"/>
-        <converters:BoolToColorConverter x:Key="boolToColorConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-        <converters:BoolToVisibilityReversedConverter x:Key="boolToVisibilityReversedConverter"/>
-        <converters:DateTimeToDateOnlyConverter x:Key="dateTimeToDateOnlyConverter"/>
-        <Style x:Key="taskButtonStyle" TargetType="Border">
-            <Setter Property="Visibility" Value="Collapsed"/>
-            <Setter Property="Height" Value="50"/>
-            <Setter Property="Width" Value="50"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1, Mode=FindAncestor,AncestorType=Grid}, Path=IsMouseOver}" Value="True">
-                    <Setter Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/GeneralResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Color x:Key="taskNo">LightCoral</Color>
+            <Color x:Key="taskYes">LightGreen</Color>
+            <DynamicResource x:Key="taskColor" ResourceKey="taskNo"/>
+            <converters:BoolToColorConverter x:Key="boolToColorConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+            <converters:BoolToVisibilityReversedConverter x:Key="boolToVisibilityReversedConverter"/>
+            <converters:DateTimeToDateOnlyConverter x:Key="dateTimeToDateOnlyConverter"/>
+            <Style x:Key="taskButtonStyle" TargetType="Border">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="Height" Value="50"/>
+                <Setter Property="Width" Value="50"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=mainGrid, Path=IsMouseOver}" Value="True">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-        <LinearGradientBrush x:Key="taskCompleted">
-            <GradientStop Color="Green" Offset="0"/>
-            <GradientStop Color="Transparent" Offset="1"/>
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="taskFailed">
-            <GradientStop Color="Red" Offset="0"/>
-            <GradientStop Color="Transparent" Offset="1"/>
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="taskExtendedComplete">
-            <GradientStop Color="LightGreen" Offset="0"/>
-            <GradientStop Color="Transparent" Offset="1"/>
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="taskExtended">
-            <GradientStop Color="Orange" Offset="0"/>
-            <GradientStop Color="Transparent" Offset="1"/>
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="taskInProgress">
-            <GradientStop Color="Gray" Offset="0"/>
-            <GradientStop Color="Transparent" Offset="1"/>
-        </LinearGradientBrush>
+            <LinearGradientBrush x:Key="taskCompleted">
+                <GradientStop Color="Green" Offset="0"/>
+                <GradientStop Color="Transparent" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="taskFailed">
+                <GradientStop Color="Red" Offset="0"/>
+                <GradientStop Color="Transparent" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="taskExtendedComplete">
+                <GradientStop Color="LightGreen" Offset="0"/>
+                <GradientStop Color="Transparent" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="taskExtended">
+                <GradientStop Color="Orange" Offset="0"/>
+                <GradientStop Color="Transparent" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="taskInProgress">
+                <GradientStop Color="Gray" Offset="0"/>
+                <GradientStop Color="Transparent" Offset="1"/>
+            </LinearGradientBrush>
 
-        <Style x:Key="movementStyle">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Grid}, Path=IsMouseOver}" Value="True">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-6 0 0 0" Duration="0:0:0.1"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-42 0 0 0" Duration="0:0:0.1"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+            <Style x:Key="movementStyle">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=Grid}, Path=IsMouseOver}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-6 0 0 0" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation Storyboard.TargetProperty="Margin" To="-42 0 0 0" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+        
     </UserControl.Resources>
-    <Grid MaxWidth="{Binding ElementName=mainControl, Path=ActualWidth}" MinHeight="50" HorizontalAlignment="Stretch" x:Name="mainGrid" MouseLeave="mainGrid_MouseLeave">
+    <Grid x:Name="mainGrid" MaxWidth="{Binding ElementName=mainControl, Path=ActualWidth}" MinHeight="50" HorizontalAlignment="Stretch" MouseLeave="mainGrid_MouseLeave">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
@@ -147,23 +153,112 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <customControls:EditableTextBlock Grid.Column="0" Text="{Binding Task, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" FontSize="21" Margin="5 0 0 0" Background="Blue"/>
-            <TextBlock VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Right" Text="{Binding DueDateString}"/>
         </Grid>
-        <TextBlock Margin="10 0 0 0" Grid.Column="1" Text="Task is not updated. Plese, use the 'update' or 'update all' button!" Visibility="{Binding IsUpdated, Converter={StaticResource boolToVisibilityReversedConverter}}" Foreground="Blue"  VerticalAlignment="Bottom"/>
-        <Border VerticalAlignment="Center" Height="auto" Width="auto" Grid.Column="2" Style="{StaticResource ResourceKey=taskButtonStyle}">
+        <Border VerticalAlignment="Center" Height="auto" Width="auto" Grid.Column="2">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Button Click="Button_Click" Grid.Row="0" CommandParameter="{Binding Source={x:Static sys:DateTime.Today}}" HorizontalAlignment="Right" VerticalAlignment="Center" Height="40" Width="40"/>
-                <Calendar DisplayDateStart="{Binding Source={x:Static sys:DateTime.Today}, Mode=OneWay}" GotMouseCapture="extendCalendar_GotMouseCapture" Visibility="Collapsed" x:Name="extendCalendar" Grid.Row="1"/>
-                <Button Visibility="Collapsed" x:Name="confirmButton" Grid.Row="2" Command="{Binding ExtendTaskCommand}" CommandParameter="{Binding ElementName=extendCalendar, Path=SelectedDate}" Content="Confirm" Margin="0 0"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Margin="0 0 20 0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding DueDateString}"/>
+                    <Border Style="{StaticResource taskButtonStyle}" Grid.Column="2">
+                        <Button Margin="0 0 0 0" Style="{StaticResource generalButtonStyle}" Click="Button_Click" Grid.Row="0" CommandParameter="{Binding Source={x:Static sys:DateTime.Today}}" HorizontalAlignment="Right" VerticalAlignment="Center" Height="40" Width="40">
+                            <Button.Content>
+                                <ContentControl>
+                                    <Canvas RenderTransformOrigin="0.5, 0.5">
+                                        <Line X1="10" Y1="15" X2="21" Y2="28" StrokeThickness="3" Stroke="Gray"/>
+                                        <Line X1="19" Y1="28" X2="30" Y2="15" StrokeThickness="3" Stroke="Gray"/>
+                                        <Canvas.RenderTransform>
+                                            <RotateTransform Angle="0"/>
+                                        </Canvas.RenderTransform>
+                                        <Canvas.Style>
+                                            <Style TargetType="Canvas">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsTaskOpen, RelativeSource={RelativeSource AncestorLevel=1, AncestorType=local:TaskView}}" Value="True">
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)"
+                                                                        To="180"
+                                                                        Duration="0:0:0.2"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)"
+                                                                        To="0"
+                                                                        Duration="0:0:0.2"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.ExitActions>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Canvas.Style>
+                                    </Canvas>
+                                </ContentControl>
+                            </Button.Content>
+                        </Button>
+                    </Border>
+                </Grid>
+                <StackPanel Grid.Row="1">
+                    <Calendar Visibility="Visible" x:Name="extendCalendar" DisplayDateStart="{Binding Source={x:Static sys:DateTime.Today}, Mode=OneWay}" GotMouseCapture="extendCalendar_GotMouseCapture" Grid.Row="1"/>
+                    <Button Visibility="Visible" x:Name="confirmButton" Grid.Row="2" Command="{Binding ExtendTaskCommand}" CommandParameter="{Binding ElementName=extendCalendar, Path=SelectedDate}" Content="Confirm" Margin="0 0"/>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Height" Value="0"/>
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding IsTaskOpen, RelativeSource={RelativeSource AncestorLevel=1, AncestorType=local:TaskView}}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                                        Storyboard.TargetProperty="Height"
+                                                                        To="190"
+                                                                        Duration="0:0:0.2"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    Storyboard.TargetProperty="Height"
+                                                    To="0"
+                                                    Duration="0:0:0.2"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                </StackPanel>
             </Grid>
         </Border>
-        <Border Grid.Column="3" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
-            <Button Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorLevel=1, AncestorType=local:MainView}}" CommandParameter="{Binding Id}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40"/>
+        <Border VerticalAlignment="Top" Grid.Column="3" Width="50" Style="{StaticResource ResourceKey=taskButtonStyle}">
+            <Button Style="{StaticResource generalButtonStyle}" Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorLevel=1, AncestorType=local:MainView}}" CommandParameter="{Binding Id}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40">
+                <Button.Content>
+                    <ContentControl>
+                        <Canvas>
+                            <Line X1="12" Y1="12" X2="28" Y2="28" StrokeThickness="3" Stroke="Gray"/>
+                            <Line X1="12" Y1="28" X2="28" Y2="12" StrokeThickness="3" Stroke="Gray"/>
+                        </Canvas>
+                    </ContentControl>
+                </Button.Content>
+            </Button>
         </Border>
     </Grid>
 </UserControl>

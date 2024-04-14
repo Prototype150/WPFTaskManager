@@ -16,6 +16,7 @@ namespace DesktopTaskManager.ViewModel
     {
         private ITaskService _taskService;
 
+        public event Commander TaskStateChanged;
         public ICommand CompleteTaskCommand { get; set; }
         public ICommand UpdateTaskCommand { get; set; }
         public ICommand ExtendTaskCommand { get; set; }
@@ -52,6 +53,7 @@ namespace DesktopTaskManager.ViewModel
             {
                 _taskState = value;
                 OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(TaskState)));
+                TaskStateChanged?.Invoke(Id);
             }
         }
 
@@ -100,7 +102,7 @@ namespace DesktopTaskManager.ViewModel
 
         public string DueDateString
         {
-            get { return DueDate.ToString(); }
+            get { return "Due date: " + DueDate.ToString(); }
         }
 
         public TaskViewModel(int id,string task, bool isUpdated, bool isCompleted, int sortId, DateOnly dueDate, TaskState taskState, ITaskService taskService)

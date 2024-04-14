@@ -113,16 +113,25 @@ namespace DesktopTaskManager.ViewModel.Main
         private async void AddTask(object? parameter)
         {
             IsAdding = true;
+
             if (!string.IsNullOrWhiteSpace(NewTask))
             {
                 var result = await _taskService.AddTask(new TaskModel(MainAccount.Id, NewTask, Tasks.Count(), TaskState.InProgress, DateOnly.FromDateTime(DueDate)));
                 if(result.result != null)
                 {
-                    Tasks.Add(new TaskViewModel(result.result.Id, result.result.Task, true, false, result.result.SortId, result.result.DueDate, TaskState.InProgress, _taskService));
+                    var t = new TaskViewModel(result.result.Id, result.result.Task, true, false, result.result.SortId, result.result.DueDate, TaskState.InProgress, _taskService);
+                    t.TaskStateChanged += OnTaskState;
+                    Tasks.Add(t);
                     NewTask = string.Empty;
                 }
             }
+
             IsAdding = false;
+        }
+
+        private void OnTaskState(object? parameter)
+        {
+            OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(DueTodayString)));
         }
 
         private async void DeleteTask(object? parameter)
@@ -154,6 +163,7 @@ namespace DesktopTaskManager.ViewModel.Main
         private async Task UpdateAllTasks(object? parameter)
         {
             IsUpdating = true;
+
             List<Task> tasks = new List<Task>();
             foreach (var task in Tasks.Where(x => !x.IsUpdated))
             {
@@ -182,7 +192,9 @@ namespace DesktopTaskManager.ViewModel.Main
             {
                 foreach (var task in tasks.tasks)
                 {
-                    Tasks.Add(new TaskViewModel(task.Id, task.Task, true, task.IsCompleted, task.SortId, task.DueDate, task.State, _taskService));
+                    var t = new TaskViewModel(task.Id, task.Task, true, task.IsCompleted, task.SortId, task.DueDate, task.State, _taskService);
+                    t.TaskStateChanged += OnTaskState;
+                    Tasks.Add(t);
                 }
 
                 UpdateTaskStates();

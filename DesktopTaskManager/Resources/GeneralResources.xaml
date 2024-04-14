@@ -9,8 +9,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border VerticalAlignment="Stretch" Grid.Row="0" Grid.RowSpan="2" CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource halfConverter}}">
-                        <ContentPresenter/>
+                    <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="0" Grid.RowSpan="2" CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource halfConverter}}">
+                        <ContentPresenter VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Background" Value="LightGray"/>
